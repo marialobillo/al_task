@@ -2,7 +2,7 @@ const models = require("../database/models");
 const { encrypt, decrypt } = require('../config/crypto');
 
 
-const setValue = async (req, res) => {
+const setService = async (req, res) => {
   try {
         const {id_service, encryption_key, value} = req.body;
         const value_hashed = encrypt(value, encryption_key);
@@ -55,9 +55,17 @@ const updateService = async (id_service, value) => {
   }
 }
 
-const getValueById = async (req, res) => {
+const getServiceById = async (req, res) => {
     try {
       const { id_service, encryption_key } = req.body;
+
+      // if(id_service == '*'){
+      //   const services = await getServices();
+      //   services.foreach(service => {
+      //     const content = decrypt(service.value, encryption_key);
+      //     console.log('+',content);
+      //   })
+      // }
 
       const service = await models.Service.findOne({
         where: { id_service },
@@ -72,12 +80,22 @@ const getValueById = async (req, res) => {
     } catch (error) {
       return res.status(500).json([]);
     }
-  };
+};
+
+const getServices = async () => {
+  try {
+    const services = await models.Service.findAll({ raw: true });
+   
+    return services;
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+}
 
 
 
 module.exports = {
-    setValue, 
-    getValueById
+    setService, 
+    getServiceById
 }
   
