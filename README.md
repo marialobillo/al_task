@@ -4,19 +4,19 @@ API with express, sequelize, and postgesql
 
 ## Instructions
 
-1. node and npm installed, and postgresql or remote database.
+1. node and npm need to be installed, and postgresql or a remote database.
 
-2. `code` git clone https://github.com/marialobillo/al_task.git `code`
+2. Clone the repo `git clone https://github.com/marialobillo/al_task.git`
 
-3. `code` npm install  `code` in root directory
+3. Install the dependencies `npm install`
 
-4. `code` touch .env `code`
+4. `touch .env`
 
-    Add your postgres database url as `code` DEV_DATABASE_URL=  `code`
+    Add your postgres database url as `DEV_DATABASE_URL=`  
 
-5. Execute migrations with `code` sequelize db:migrate `code`
+5. Execute migrations with `sequelize db:migrate`
 
-6. Execute the seeders with `code` sequelize db:seed:all `code`
+6. Execute the seeders with `sequelize db:seed:all`
 
-7. To run the projects type: `code` npm run dev `code`
+7. To run the projects just type: `npm run dev`
 
