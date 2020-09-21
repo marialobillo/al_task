@@ -40,4 +40,9 @@ const getValueById = async (req, res) => {
       return res.status(500).send([]);
     }
   };
+
+module.exports = {
+    createValue, 
+    getValueById
+}
   
