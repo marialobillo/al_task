@@ -17,12 +17,12 @@ const createValue = async (req, res) => {
         console.log("key: ", key_hashed);
         console.log("value: ", value_hashed);
 
-        const valueRow = await models.values.create({
+        const valueRow = await Values.create({
             id_value: id_hashed, 
             encryption_key: key_hashed, 
             value: value_hashed
         });
-
+        console.log('The value created', valueRow.toJSON());
     return res.status(201).json({
       valueRow
     });
