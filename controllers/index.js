@@ -1,23 +1,30 @@
 const models = require("../database/models");
-const cryto = require('crypto');
+const crypto = require('crypto');
 
 
 const createValue = async (req, res) => {
   try {
         const {id_value, encryption_key, value} = req.body;
-          
-        const id_hash = crypto.createHash('md5').update(name).digest('hex');
-        const key_hash = crypto.createHash('md5').update(encryption_key).digest('hex');
-        const value_hash = crypto.createHash('md5').update(value).digest('hex');
 
-        const value = await models.Values.create({
-            id_value: id_hash, 
-            encryption_key: key_hash, 
-            value: value_hash
+       
+          
+        const id_hashed = crypto.createHash('md5').update(id_value).digest('hex');
+        const key_hashed = crypto.createHash('md5').update(encryption_key).digest('hex');
+        const value_hashed = crypto.createHash('md5').update(value).digest('hex');
+
+
+        console.log("id: ", id_hashed);
+        console.log("key: ", key_hashed);
+        console.log("value: ", value_hashed);
+
+        const valueRow = await models.values.create({
+            id_value: id_hashed, 
+            encryption_key: key_hashed, 
+            value: value_hashed
         });
 
     return res.status(201).json({
-      value
+      valueRow
     });
   } catch (error) {
     return res.status(500).json({ error: error.message });

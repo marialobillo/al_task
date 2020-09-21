@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon index.js",
+    "migrate": "npx sequelize-cli db:migrate",
+    "test": "cross-env NODE_ENV=test jest --testTimeout=10000",
+    "migrate:reset": "npx sequelize-cli db:migrate:undo:all && npm run migrate",
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +20,8 @@
     "pg-hstore": "^2.3.3",
     "sequelize": "^6.3.5",
     "sequelize-cli": "^6.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
   }
 }
