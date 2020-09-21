@@ -1,24 +1,17 @@
 const models = require("../database/models");
-const crypto = require('crypto');
+const { encrypt, decrypt } = require('../config/crypto');
 
 
 const createValue = async (req, res) => {
   try {
         const {id_service, encryption_key, value} = req.body;
 
-       
-          
-        const id_hashed = crypto.createHash('md5').update(id_service).digest('hex');
-        const key_hashed = crypto.createHash('md5').update(encryption_key).digest('hex');
-        const value_hashed = crypto.createHash('md5').update(value).digest('hex');
-
-        console.log("id: ", id_hashed);
-        console.log("key: ", key_hashed);
-        console.log("value: ", value_hashed);
+        console.log('value', value);
+        const value_hashed = encrypt(value, encryption_key);
+        console.log('value hashed', value_hashed);
 
         const service = await models.Service.create({
-            id_service: id_hashed, 
-            encryption_key: key_hashed, 
+            id_service, 
             value: value_hashed
         });
         console.log('The value created', service.toJSON());
@@ -32,18 +25,23 @@ const createValue = async (req, res) => {
 
 const getValueById = async (req, res) => {
     try {
-      const { id_value, encryption_key } = req.body;
+      const { id_service, encryption_key } = req.body;
 
-      const value = await models.Services.findOne({
-        where: { id_value: id_value, encryption_key: encryption_key },
+      const service = await models.Service.findOne({
+        where: { id_service },
       });
+      console.log('id_service', id_service);
+      console.log('encryption_key', encryption_key);
+      console.log('LO DEVUELTO', service.value);
       
-      if (value) {
-        return res.status(200).json({ value });
+      const value = decrypt(service.value, encryption_key);
+      console.log('THE CONTENT', typeof value);
+      if (service) {
+        return res.status(200).json(value);
       }
       return res.status(404).send([]);
     } catch (error) {
-      return res.status(500).send([]);
+      return res.status(500).json({ error: error.message });
     }
   };
 
