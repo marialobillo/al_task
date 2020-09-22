@@ -18,18 +18,15 @@ const setService = async (req, res) => {
 
           // Updating the service that already exists         **UPDATING**
           if(service_checked){
-            //update the value
+            //the service exists so we update the value
             const service_updated = await updateService(id, value_hashed);
             
             // return the service updated
             if(service_updated){
+
               const updated =  service_checked.dataValues;
-              
-              return res.status(201).json({
-                updated
-              });
+              return res.status(201).json({ updated });
             }
-            
           }
   
           // Creating a new service                           **CREATING **
@@ -38,7 +35,7 @@ const setService = async (req, res) => {
               value: value_hashed
           });
           return res.status(201).json({ service });
-          
+
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -51,10 +48,8 @@ const getOneServiceById = async id => {
 const updateService = async (id, value) => {
   try {
     const service_updated  = await models.Service.update(
-      {id,value}, 
-      {
-        where: { id }
-      });
+      { id,value }, 
+      { where: { id } });
     if(service_updated){
       return service_updated;
     }
@@ -67,13 +62,11 @@ const getServiceById = async (req, res) => {
     try {
       const { id, encryption_key } = req.body;
 
-      // if(id_service == '*'){
-      //   const services = await getServices();
-      //   services.foreach(service => {
-      //     const content = decrypt(service.value, encryption_key);
-      //     console.log('+',content);
-      //   })
-      // }
+      // Checking the wilcard characters in id
+      if(id.includes('*')){
+        const queryOnId = id.substring(0, id.length - 1);
+        await checkQueryOnId(queryOnId);
+      }
 
       const service = await models.Service.findOne({
         where: { id },
@@ -89,6 +82,27 @@ const getServiceById = async (req, res) => {
       return res.status(500).json([]);
     }
 };
+
+const checkQueryOnId = async (query) => {
+  // Get all Services
+  const services = await getAllServices();
+  // Select the rows that matches
+  // console.log(services);
+  console.log('****** la query **********************', query);
+  const matches = services.filter(service => service.id.includes(query));
+  console.log('Matches ----------------------------------------------');
+  console.log('AHI VAN LOS MATCHES', matches);
+  // return those rows
+}
+
+const getAllServices = async () => {
+  try {
+    const services = await models.Service.findAll({ raw: true });
+    return services;
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+}
 
 const getServices = async () => {
   try {
