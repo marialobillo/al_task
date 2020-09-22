@@ -13,18 +13,18 @@ const setService = async (req, res) => {
           const value_hashed = encrypt(JSON.stringify(value), encryption_key);
 
           // Check out if the id_service already exists     
-          const service_checked = await models.Service.findOne({
-            where: { id }
-          });
-  
+          const service_checked = await getOneServiceById(id);
+
+
           // Updating the service that already exists         **UPDATING**
           if(service_checked){
             //update the value
-            const service_updated = updateService(id, value_hashed);
+            const service_updated = await updateService(id, value_hashed);
             
             // return the service updated
             if(service_updated){
               const updated =  service_checked.dataValues;
+              
               return res.status(201).json({
                 updated
               });
@@ -38,10 +38,15 @@ const setService = async (req, res) => {
               value: value_hashed
           });
           return res.status(201).json({ service });
+          
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
 };
+
+const getOneServiceById = async id => {
+  return await models.Service.findOne({ where: { id } });
+}
 
 const updateService = async (id, value) => {
   try {
