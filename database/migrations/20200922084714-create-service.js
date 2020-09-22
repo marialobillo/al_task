@@ -4,13 +4,8 @@ module.exports = {
     await queryInterface.createTable('Services', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      id_service: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        type: Sequelize.STRING
       },
       value: {
         type: Sequelize.JSON

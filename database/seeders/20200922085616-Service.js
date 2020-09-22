@@ -1,16 +1,17 @@
 module.exports = {
+
   up: (queryInterface, Sequelize) => queryInterface.bulkInsert(
     'Services',
     [
       {
-        id_service: 'engineering jobs',
-        value: JSON.stringify({'card-number': '333-222-333-444'}),
+        id: 'engineering-jobs-*',
+        value: JSON.stringify({ firstName: "Jane", lastName: "Doe" }),
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        id_service: 'engineering jobs',
-        value: JSON.stringify({'bb-number': '555-666-777-33'}),
+        id: 'marketing-jobs-*',
+        value: JSON.stringify({ firstName: "Jon", lastName: "Doe" }),
         createdAt: new Date(),
         updatedAt: new Date(),
       },

@@ -1,11 +1,12 @@
 module.exports = (sequelize, DataTypes) => {
 
   const Service = sequelize.define('Service', {
-    id_service: DataTypes.STRING,
-    value: DataTypes.JSON
+    id: DataTypes.STRING,
+    value: DataTypes.STRING
   }, {});
 
   Service.associate = function(models) {
   };
+  
   return Service;
 };
