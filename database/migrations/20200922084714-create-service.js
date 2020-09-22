@@ -8,7 +8,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       value: {
-        type: Sequelize.JSON
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

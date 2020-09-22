@@ -5,36 +5,39 @@ const { encrypt, decrypt } = require('../config/crypto');
 const setService = async (req, res) => {
   try {
         const {id, encryption_key, value} = req.body;
-        const value_hashed = encrypt(value, encryption_key);
+        // validate the value , must be a json
+        if(typeof value != 'object'){
+          return res.status(500).json([]);
+        } 
 
-        // Check out if the id_service already exists     **UPDATING**
-        const service_checked = await models.Service.findOne({
-          where: { id }
-        });
+          const value_hashed = encrypt(JSON.stringify(value), encryption_key);
 
-        // Updating the service that already exists       **UPDATING**
-        if(service_checked){
-          //update the value
-          const service_updated = updateService(id, value_hashed);
-          
-          // return the service updated
-          if(service_updated){
-            const updated =  service_checked.dataValues;
-            return res.status(201).json({
-              updated
-            });
+          // Check out if the id_service already exists     
+          const service_checked = await models.Service.findOne({
+            where: { id }
+          });
+  
+          // Updating the service that already exists         **UPDATING**
+          if(service_checked){
+            //update the value
+            const service_updated = updateService(id, value_hashed);
+            
+            // return the service updated
+            if(service_updated){
+              const updated =  service_checked.dataValues;
+              return res.status(201).json({
+                updated
+              });
+            }
+            
           }
-          
-        }
-
-        // Creating a new service            **CREATING A NEW SERVICE**
-        const service = await models.Service.create({
-            id, 
-            value: value_hashed
-        });
-        return res.status(201).json({
-          service
-        });
+  
+          // Creating a new service                           **CREATING **
+          const service = await models.Service.create({
+              id, 
+              value: value_hashed
+          });
+          return res.status(201).json({ service });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

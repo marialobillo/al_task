@@ -22,7 +22,7 @@ const decrypt = (hash, secretKey) => {
 
     const decrpyted = Buffer.concat([decipher.update(Buffer.from(hash.content, 'hex')), decipher.final()]);
 
-    return decrpyted.toString();
+    return JSON.parse(decrpyted.toString());
 };
 
 module.exports = {
