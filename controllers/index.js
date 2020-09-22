@@ -4,18 +4,18 @@ const { encrypt, decrypt } = require('../config/crypto');
 
 const setService = async (req, res) => {
   try {
-        const {id_service, encryption_key, value} = req.body;
+        const {id, encryption_key, value} = req.body;
         const value_hashed = encrypt(value, encryption_key);
 
         // Check out if the id_service already exists     **UPDATING**
         const service_checked = await models.Service.findOne({
-          where: { id_service }
+          where: { id }
         });
 
         // Updating the service that already exists       **UPDATING**
         if(service_checked){
           //update the value
-          const service_updated = updateService(id_service, value_hashed);
+          const service_updated = updateService(id, value_hashed);
           
           // return the service updated
           if(service_updated){
@@ -29,7 +29,7 @@ const setService = async (req, res) => {
 
         // Creating a new service            **CREATING A NEW SERVICE**
         const service = await models.Service.create({
-            id_service, 
+            id, 
             value: value_hashed
         });
         return res.status(201).json({
@@ -40,12 +40,12 @@ const setService = async (req, res) => {
   }
 };
 
-const updateService = async (id_service, value) => {
+const updateService = async (id, value) => {
   try {
     const service_updated  = await models.Service.update(
-      {id_service,value}, 
+      {id,value}, 
       {
-        where: { id_service}
+        where: { id }
       });
     if(service_updated){
       return service_updated;
@@ -57,7 +57,7 @@ const updateService = async (id_service, value) => {
 
 const getServiceById = async (req, res) => {
     try {
-      const { id_service, encryption_key } = req.body;
+      const { id, encryption_key } = req.body;
 
       // if(id_service == '*'){
       //   const services = await getServices();
@@ -68,7 +68,7 @@ const getServiceById = async (req, res) => {
       // }
 
       const service = await models.Service.findOne({
-        where: { id_service },
+        where: { id },
       });
       
       const value = decrypt(service.value, encryption_key);
