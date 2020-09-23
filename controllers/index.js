@@ -1,5 +1,6 @@
 const models = require("../database/models");
 const { encrypt, decrypt } = require('../config/crypto');
+const { query } = require("express");
 
 
 const setService = async (req, res) => {
@@ -64,36 +65,70 @@ const getServiceById = async (req, res) => {
 
       // Checking the wilcard characters in id
       if(id.includes('*')){
-        const queryOnId = id.substring(0, id.length - 1);
-        await checkQueryOnId(queryOnId);
-      }
+        const servicesMatches = await handleWildcardOption(id, encryption_key);
+        
+        return res.status(200).json(servicesMatches);
+      } 
 
-      const service = await models.Service.findOne({
-        where: { id },
-      });
+      // --------------------------------
+        const service = await models.Service.findOne({
+          where: { id },
+        });
+        const value = decrypt(service.value, encryption_key);
+
+        if (service) {
+          return res.status(200).json(value);
+        }
+
       
-      const value = decrypt(service.value, encryption_key);
+      return res.status(404).send('Matches not found.');
 
-      if (service) {
-        return res.status(200).json(value);
-      }
-      return res.status(404).send([]);
     } catch (error) {
-      return res.status(500).json([]);
+      return res.status(500).json(error.message);
     }
 };
 
-const checkQueryOnId = async (query) => {
+const handleWildcardOption = async (id, encryption_key) => {
+  try {
+
+    // Extracting the query
+    const query = id.substring(0, id.length - 1);
+    // Getting the services that matches with the query {id, value, createdAt, updatedAt}
+    const servicesMatches = await checkWildcardQuery(query);
+
+    const decrypted_matches = decryptMatches(servicesMatches, encryption_key);
+    
+    return decrypted_matches; 
+  } catch (error) {
+    return error.message;
+  }
+}
+
+
+const checkWildcardQuery = async query => {
   // Get all Services
   const services = await getAllServices();
+
   // Select the rows that matches
-  // console.log(services);
-  console.log('****** la query **********************', query);
   const matches = services.filter(service => service.id.includes(query));
-  console.log('Matches ----------------------------------------------');
-  console.log('AHI VAN LOS MATCHES', matches);
   // return those rows
+  return matches;
 }
+
+const decryptMatches = (matches, encryption_key) => {
+  const decrypted_values= matches.map(service => {
+  
+    const hashed_value = decrypt(service.value, encryption_key);
+    return {
+      id: service.id,
+      value: hashed_value,
+      createdAt: service.createdAt,
+      updatedAt: service.updatedAt
+    };
+  });
+  return decrypted_values;
+}
+
 
 const getAllServices = async () => {
   try {
@@ -104,15 +139,15 @@ const getAllServices = async () => {
   }
 }
 
-const getServices = async () => {
-  try {
-    const services = await models.Service.findAll({ raw: true });
+// const getServices = async () => {
+//   try {
+//     const services = await models.Service.findAll({ raw: true });
    
-    return services;
-  } catch (error) {
-    return res.status(500).send(error.message);
-  }
-}
+//     return services;
+//   } catch (error) {
+//     return res.status(500).send(error.message);
+//   }
+// }
 
 
 
