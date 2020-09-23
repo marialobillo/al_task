@@ -145,15 +145,6 @@ const getAllServices = async () => {
   }
 }
 
-// const getServices = async () => {
-//   try {
-//     const services = await models.Service.findAll({ raw: true });
-   
-//     return services;
-//   } catch (error) {
-//     return res.status(500).send(error.message);
-//   }
-// }
 
 
 
