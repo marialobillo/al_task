@@ -1,6 +1,5 @@
 const models = require("../database/models");
 const { encrypt, decrypt } = require('../config/crypto');
-const { query } = require("express");
 
 
 const setService = async (req, res) => {
@@ -77,14 +76,19 @@ const getServiceById = async (req, res) => {
         const value = decrypt(service.value, encryption_key);
 
         if (service) {
-          return res.status(200).json(value);
+          return res.status(200).json({
+            id,
+            value,
+            createdAt: service.createdAt,
+            updatedAt: service.updatedAt
+          });
         }
 
       
       return res.status(404).send('Matches not found.');
 
     } catch (error) {
-      return res.status(500).json(error.message);
+      return res.status(500).json([]);
     }
 };
 
@@ -117,14 +121,16 @@ const checkWildcardQuery = async query => {
 
 const decryptMatches = (matches, encryption_key) => {
   const decrypted_values= matches.map(service => {
-  
+    // decrypt the value attribute
     const hashed_value = decrypt(service.value, encryption_key);
+    // returning the service, all attributes
     return {
       id: service.id,
       value: hashed_value,
       createdAt: service.createdAt,
       updatedAt: service.updatedAt
     };
+
   });
   return decrypted_values;
 }
